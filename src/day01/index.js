@@ -2,27 +2,15 @@ import run from "aocrunner";
 
 const parseInput = (rawInput) => rawInput;
 
-const dictIncrement = (d, k) => {
-  if (k in d) {
-    d[k] += 1
-  } else {
-    d[k] = 1
-  }
-}
-
 const part1 = (rawInput) => {
   const input = parseInput(rawInput);
   let res = 0;
   const rows = input.split("\n")
-  const l = rows.map((x) => x.split(/\s+/)[0])
-  const r = rows.map((x) => x.split(/\s+/)[1])
+  const l = rows.map((x) => parseInt(x.split(/\s+/)[0]))
+  const r = rows.map((x) => parseInt(x.split(/\s+/)[1]))
   l.sort();
   r.sort();
-  for (let i=0; i < l.length; i++) {
-    res += Math.abs(l[i] - r[i])
-  }
-
-  return res;
+  return l.reduce((res, left, i) => res + Math.abs(left - r[i]), 0);
 };
 
 const part2 = (rawInput) => {
@@ -31,18 +19,15 @@ const part2 = (rawInput) => {
   const rows = input.split("\n")
   const l = rows.map((x) => parseInt(x.split(/\s+/)[0]))
   const r = rows.map((x) => parseInt(x.split(/\s+/)[1]))
-  const dl = {}
-  const dr = {}
-  for (let i=0; i<l.length; i++) {
-    dictIncrement(dl, l[i]);
-    dictIncrement(dr, r[i]);
-  }
-  for (const [key, value] of Object.entries(dl)) {
-    if (!(key in dr)) {
-      continue;
+  const dl = new Map;
+  const dr = new Map;
+  l.forEach((num) => dl.set(num, (dl.get(num) || 0) + 1));
+  r.forEach((num) => dr.set(num, (dr.get(num) || 0) + 1));
+  dl.forEach((val, key) => {
+    if (dr.has(key)) {
+      res += key * val * dr.get(key)
     }
-    res += parseInt(key) * value * dr[key];
-  }
+  });
   return res;
 };
 
