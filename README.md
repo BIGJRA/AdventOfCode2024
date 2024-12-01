@@ -7,6 +7,8 @@
 
 # 🎄 Advent of Code 2024 🎄
 
+Welcome to my Advent of Code 2024 solutions repository! This year I decided to practice using JavaScript to solve the AdventOfCode problems this year - to run them yourself check out the above Template project this is based on.
+
 ## Solutions
 
 <!--SOLUTIONS-->
