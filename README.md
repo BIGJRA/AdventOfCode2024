@@ -78,9 +78,9 @@ Both parts: 1.322ms
 
 ```
 Day 02
-Time part 1: 0.919ms
-Time part 2: 83.169ms
-Both parts: 84.088ms
+Time part 1: 0.862ms
+Time part 2: 2.261ms
+Both parts: 3.123ms
 ```
 
 ```
