@@ -1,35 +1,35 @@
 import run from "aocrunner";
 
 const parseInput = (rawInput) => {
-  const raw_lines = rawInput.split('\n')
+  const raw_lines = rawInput.split("\n");
   const records = [];
   raw_lines.forEach((l) => {
     records.push(l.split(" ").map((x) => parseInt(x)));
   });
   return records;
-}
+};
 
 const part1 = (rawInput) => {
   const input = parseInput(rawInput);
   let res = 0;
-  input.forEach(record => {
+  input.forEach((record) => {
     let valid = true;
-    let prev = record[0]
+    let prev = record[0];
     let ascdesc = (record[1] - record[0]) / Math.abs(record[1] - record[0]);
     for (let i = 1; i < record.length; i++) {
-      let diff = record[i] - prev
+      let diff = record[i] - prev;
       if (diff == 0 || diff / Math.abs(diff) != ascdesc || Math.abs(diff) > 3) {
         valid = false;
-        break
+        break;
       }
-      prev = record[i]
+      prev = record[i];
     }
     if (valid) {
-      res += 1
+      res += 1;
     }
-  })
+  });
 
-  return res
+  return res;
 };
 
 const part2 = (rawInput) => {
@@ -59,15 +59,15 @@ const part2 = (rawInput) => {
     }
 
     // Potential mismatches: the first and last number removed
-    const candidates = [
-      record.slice(1),
-      record.slice(0, n - 1),
-    ];
+    const candidates = [record.slice(1), record.slice(0, n - 1)];
 
-    // Other mismatches: when any condition is problematic we try removing both sides of the comparison 
+    // Other mismatches: when any condition is problematic we try removing both sides of the comparison
     for (let i = 1; i < n; i++) {
       const diff = record[i] - record[i - 1];
-      if (Math.abs(diff) > 3 || Math.sign(diff) !== Math.sign(record[1] - record[0])) {
+      if (
+        Math.abs(diff) > 3 ||
+        Math.sign(diff) !== Math.sign(record[1] - record[0])
+      ) {
         candidates.push(record.slice(0, i).concat(record.slice(i + 1)));
         candidates.push(record.slice(0, i - 1).concat(record.slice(i)));
       }
@@ -79,8 +79,6 @@ const part2 = (rawInput) => {
   });
   return res;
 };
-
-
 
 run({
   part1: {
@@ -140,11 +138,9 @@ run({
         `,
         expected: 1,
       },
-
     ],
     solution: part2,
   },
   trimTestInputs: true,
   onlyTests: false,
 });
-
