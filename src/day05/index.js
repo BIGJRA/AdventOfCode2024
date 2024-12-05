@@ -28,11 +28,7 @@ const part1 = (rawInput) => {
       for (let j = i + 1; j < book.length; j++) {
         if (incoming.get(book.at(i)).has(book.at(j))) {
           bookValid = false;
-          break;
         }
-      }
-      if (bookValid == false) {
-        break;
       }
     }
     if (bookValid) {
@@ -47,16 +43,18 @@ const part2 = (rawInput) => {
   let res = 0;
   books.forEach((book) => {
     let isValid = false;
-    let wasInvalid = false;
+    let wasInvalid = false; // This flag just skips the entries of Part 1 that are good already
     while (isValid == false) {
       isValid = true;
       for (let i = 0; i < book.length; i++) {
         for (let j = i + 1; j < book.length; j++) {
           if (incoming.get(book.at(i)).has(book.at(j))) {
+            // Greedily this simply fixes mismatched pairs until no mismatched pairs remain. With Book length n:
+            // O(n^3) thanks to i,j pairs being O(n^2) and needing to pass through O(n) times
             isValid = false;
             wasInvalid = true;
-            const swapped = [...book]; // Create a copy of the array (optional if modifying in place is fine)
-            [swapped[i], swapped[j]] = [swapped[j], swapped[i]]; // Swap using destructuring
+            const swapped = [...book];
+            [swapped[i], swapped[j]] = [swapped[j], swapped[i]];
             book = swapped;
           }
         }
