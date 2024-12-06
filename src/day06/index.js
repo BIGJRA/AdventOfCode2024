@@ -9,11 +9,8 @@ const dirs = [
 ];
 
 const hashPos = (pos) => pos[0].toString() + "," + pos[1].toString();
-const unhashArr = (hash) => [...hash.split(",").map((x) => parseInput(x))];
 const arrOutbounds = (pos, num_cols, num_rows) =>
   pos[0] == -1 || pos[0] == num_cols || pos[1] == -1 || pos[1] == num_rows;
-const hashPosDir = (pos, dir) =>
-  pos[0].toString() + "," + pos[1].toString() + "," + dir.toString();
 const findNxt = (pos, dir, mult = 1) => [
   pos[0] + mult * dirs[dir][0],
   pos[1] + mult * dirs[dir][1],
