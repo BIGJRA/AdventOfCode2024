@@ -1,5 +1,4 @@
 import run from "aocrunner";
-import { parse } from "path";
 
 const dirs = [
   [0, -1],
