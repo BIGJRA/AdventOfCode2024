@@ -20,7 +20,7 @@ Welcome to my Advent of Code 2024 solutions repository! This year I decided to p
 [![Day](https://badgen.net/badge/05/%E2%98%85%E2%98%85/green)](src/day05)
 [![Day](https://badgen.net/badge/06/%E2%98%85%E2%98%85/green)](src/day06)
 [![Day](https://badgen.net/badge/07/%E2%98%85%E2%98%85/green)](src/day07)
-![Day](https://badgen.net/badge/08/%E2%98%86%E2%98%86/gray)
+[![Day](https://badgen.net/badge/08/%E2%98%85%E2%98%85/green)](src/day08)
 ![Day](https://badgen.net/badge/09/%E2%98%86%E2%98%86/gray)
 ![Day](https://badgen.net/badge/10/%E2%98%86%E2%98%86/gray)
 ![Day](https://badgen.net/badge/11/%E2%98%86%E2%98%86/gray)
@@ -113,16 +113,16 @@ Both parts: 12409.781ms
 
 ```
 Day 07
-Time part 1: 20.153ms
-Time part 2: 482.132ms
-Both parts: 502.285ms
+Time part 1: 20.658ms
+Time part 2: 493.508ms
+Both parts: 514.166ms
 ```
 
 ```
 Day 08
-Time part 1: -
-Time part 2: -
-Both parts: -
+Time part 1: 3.196ms
+Time part 2: 3.192ms
+Both parts: 6.387ms
 ```
 
 ```
@@ -245,8 +245,8 @@ Both parts: -
 ```
 
 ```
-Total stars: 14/50
-Total time: 12933.288ms
+Total stars: 16/50
+Total time: 12951.555ms
 ```
 
 <!--/RESULTS-->
