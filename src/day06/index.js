@@ -1,108 +1,129 @@
 import run from "aocrunner";
 
-const dirs = [
-  [0, -1],
-  [1, 0],
-  [0, 1],
-  [-1, 0],
-];
+const parseInput = (rawInput) => rawInput;
 
-const hashPos = (pos) => pos[0].toString() + "," + pos[1].toString();
-const arrOutbounds = (pos, num_cols, num_rows) =>
-  pos[0] == -1 || pos[0] == num_cols || pos[1] == -1 || pos[1] == num_rows;
-const findNxt = (pos, dir, mult = 1) => [
-  pos[0] + mult * dirs[dir][0],
-  pos[1] + mult * dirs[dir][1],
-];
+const solve = (input, part2 = false) => {
+  const C = input.split("\n").length;
+  const R = input.split("\n")[0].length;
+  const dirs = [
+    [0, -1],
+    [1, 0],
+    [0, 1],
+    [-1, 0],
+  ];
+  const coordsToHash = (coords) =>
+    coords[0].toString() + "," + coords[1].toString();
+  const coordsAndDirToHash = (coords, dir) =>
+    coords[0].toString() + "," + coords[1].toString() + "," + dir.toString();
 
-const parseInput = (rawInput) => {
+  const coordsAreOutside = (coords) =>
+    coords[0] == -1 || coords[0] == C || coords[1] == -1 || coords[1] == R;
+  const findNxt = (pos, dir, mult = 1) => [
+    pos[0] + mult * dirs[dir][0],
+    pos[1] + mult * dirs[dir][1],
+  ];
+  const findNxtAlongLine = (pos, dir, obs) => {
+    let nxt;
+    let curr = [...pos];
+    while (true) {
+      nxt = findNxt(curr, dir);
+
+      if (coordsAreOutside(nxt)) {
+        return -1;
+      }
+      if (obs.has(coordsToHash(nxt))) {
+        return curr;
+      }
+      curr = nxt;
+    }
+  };
+
   const obstacles = new Set();
+  const newStarts = [];
   let start;
-  const num_cols = rawInput.split("\n").length;
-  const num_rows = rawInput.split("\n")[0].length;
-  for (let [y, line] of rawInput.split("\n").entries()) {
+
+  for (let [y, line] of input.split("\n").entries()) {
     for (let [x, char] of line.split("").entries()) {
       if (char == "#") {
-        obstacles.add(x.toString() + "," + y.toString());
+        obstacles.add(coordsToHash([x, y]));
       } else if (char == "^") {
         start = [x, y];
       }
     }
   }
-  return [start, obstacles, num_cols, num_rows];
-};
-
-const part1 = (rawInput) => {
-  const [start, obstacles, num_cols, num_rows] = parseInput(rawInput);
-  let dir = 0;
-  let pos = start;
-  let vis = new Set();
-  let nxt;
-  while (true) {
-    if (arrOutbounds(pos, num_cols, num_rows)) {
-      return vis.size;
-    }
-    vis.add(hashPos(pos));
-    nxt = findNxt(pos, dir);
-    while (obstacles.has(hashPos(nxt))) {
-      dir = (dir + 1) % 4;
-      nxt = findNxt(pos, dir);
-    }
-    pos = nxt;
-  }
-};
-
-const part2 = (rawInput) => {
-  const [start, obstacles, num_cols, num_rows] = parseInput(rawInput);
-  const maxMoves = num_cols * num_rows * 4;
-
   const getVisited = () => {
     let dir = 0;
-    let pos = start;
+    let pos = [...start];
     const vis = new Set();
     let nxt;
     while (true) {
-      if (arrOutbounds(pos, num_cols, num_rows)) {
+      if (coordsAreOutside(pos)) {
         return vis;
       }
-      vis.add(hashPos(pos));
+      vis.add(coordsToHash(pos));
       nxt = findNxt(pos, dir);
-      while (obstacles.has(hashPos(nxt))) {
+      while (obstacles.has(coordsToHash(nxt))) {
         dir = (dir + 1) % 4;
         nxt = findNxt(pos, dir);
       }
+      newStarts.push([pos, dir, nxt]);
       pos = nxt;
     }
   };
   const visited = getVisited();
+  if (!part2) {
+    return visited.size;
+  }
+  newStarts.pop(); // here we just get rid of the errant final one
+  const obstaclesChecked = new Set();
   let res = 0;
-
-  visited.forEach((obs) => {
-    if (obs == start) {
+  newStarts.forEach(([startPos, startDir, obs]) => {
+    if (obstaclesChecked.has(coordsToHash(obs))) {
       return;
     }
-    let dir = 0;
-    let pos = start;
-    let nxt;
-    let moveCount = 0;
+    obstaclesChecked.add(coordsToHash(obs));
+
+    const newObs = new Set([...obstacles]);
+    newObs.add(coordsToHash(obs));
+
+    const found = new Set();
+    let [pos, dir] = [[...startPos], startDir];
+
     while (true) {
-      if (arrOutbounds(pos, num_cols, num_rows)) {
-        return;
-      }
-      if (moveCount == maxMoves) {
+      // Exit and increment return if current state has already been done
+      if (found.has(coordsAndDirToHash(pos, dir))) {
         res += 1;
         return;
       }
-      nxt = findNxt(pos, dir);
-      while (obstacles.has(hashPos(nxt)) || obs == hashPos(nxt)) {
+
+      // Add current state to found
+      found.add(coordsAndDirToHash(pos, dir));
+
+      // Move ahead to the next position (if out of bounds, return)
+      // for simplicity, rotations and jumps are DIFFERENT
+
+      if (newObs.has(coordsToHash(findNxt(pos, dir)))) {
         dir = (dir + 1) % 4;
-        nxt = findNxt(pos, dir);
+      } else {
+        const nxt = findNxtAlongLine(pos, dir, newObs);
+        if (nxt == -1) {
+          return;
+        }
+        pos = nxt;
       }
-      pos = nxt;
-      moveCount += 1;
     }
   });
   return res;
+};
+
+const part1 = (rawInput) => {
+  const input = parseInput(rawInput);
+  return solve(input);
+};
+
+const part2 = (rawInput) => {
+  const input = parseInput(rawInput);
+  return solve(input, true);
 };
 
 run({
