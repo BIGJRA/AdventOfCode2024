@@ -1,102 +1,61 @@
 import run from "aocrunner";
-import { start } from "repl";
 
 const parseInput = (rawInput) => rawInput;
 
-const findBlockLength = (array, element) =>
-  array.filter((n) => n == element).length;
-
-const isAllSame = (arr) => {
-  if (arr.length === 0) {
-    return true; // Empty array considered all the same
-  }
-  const firstElement = arr[0];
-  return arr.every((element) => element === firstElement);
-};
-
-const isAllEmpty = (arr) => {
-  return isAllSame(arr) && arr[0] === -1;
-};
-
-const getEmptyBlockIdx = (array, emptyBlockSize) => {
-  // This code looks for an empty Block of valid size
-  for (let i = 0; i < array.length - emptyBlockSize + 1; i++) {
-    if (isAllEmpty(array.slice(i, i + emptyBlockSize))) {
-      return i;
-    }
-  }
-  return -1;
-};
-
 const part1 = (rawInput) => {
   const input = parseInput(rawInput);
-  const nums = input.split("").map((x) => parseInt(x));
-  let disk = [];
-  let blockSize;
-  nums.forEach((blockSize, idx) => {
-    if (idx % 2 === 0) {
-      // Here we have an actual block
-      // divide idx by two to get the block's ID
-      disk = disk.concat([...Array(blockSize).fill(idx / 2)]);
-    } else {
-      // Here we have empty space
-      disk = disk.concat([...Array(blockSize).fill(-1)]);
-    }
-  });
-  let idx = 0;
-  while (true) {
-    if (idx >= disk.length) {
-      break;
-    }
-    if (disk[idx] === -1) {
-      let right = disk.pop();
-      while (right === -1) {
-        right = disk.pop();
-      }
-      disk[idx] = right;
-    }
-    if (idx >= disk.length) {
-      break;
-    }
-    idx += 1;
-  }
-  let res = 0;
-  disk.forEach((value, idx) => {
-    res += value * idx;
-  });
-
-  return res;
+  return solve(input);
 };
 
 const part2 = (rawInput) => {
   const input = parseInput(rawInput);
+  return solve(input, true);
+};
+
+const solve = (input, part2 = false) => {
   const nums = input.split("").map((x) => parseInt(x));
-  let disk = [];
-  let blockSize;
+  let files = [];
+  let space = [];
+  const resArray = [];
+  let pos = 0;
   nums.forEach((blockSize, idx) => {
     if (idx % 2 === 0) {
-      // Here we have an actual block
-      // divide idx by two to get the block's ID
-      disk = disk.concat([...Array(blockSize).fill(idx / 2)]);
+      if (part2) {
+        files.push([pos, blockSize, idx / 2]);
+      }
+      for (let byte = 0; byte < blockSize; byte++) {
+        resArray.push(idx / 2);
+        if (!part2) {
+          files.push([pos, 1, idx / 2]);
+        }
+        pos += 1;
+      }
     } else {
-      // Here we have empty space
-      disk = disk.concat([...Array(blockSize).fill(-1)]);
+      space.push([pos, blockSize]);
+      for (let byte = 0; byte < blockSize; byte++) {
+        resArray.push(-1);
+        pos += 1;
+      }
     }
   });
-  for (let fileIdx = disk[disk.length - 1]; fileIdx >= 0; fileIdx--) {
-    let blockSize = findBlockLength(disk, fileIdx);
-    let blockIdx = disk.findIndex((el) => el == fileIdx);
-    let move = getEmptyBlockIdx(disk, blockSize);
 
-    if (move !== -1 && move < blockIdx) {
-      for (let i = 0; i < blockSize; i++) {
-        disk[move + i] = fileIdx;
-        disk[blockIdx + i] = -1;
+  for (let fileIdx = files.length - 1; fileIdx >= 0; fileIdx--) {
+    const [filePos, fileSize, fileId] = files[fileIdx];
+    for (let spaceIdx = 0; spaceIdx < space.length; spaceIdx++) {
+      const [spacePos, spaceSize] = space[spaceIdx];
+      if (filePos > spacePos && fileSize <= spaceSize) {
+        for (let byte = 0; byte < fileSize; byte++) {
+          resArray[filePos + byte] = -1;
+          resArray[spacePos + byte] = fileId;
+        }
+        space[spaceIdx] = [spacePos + fileSize, spaceSize - fileSize];
+        break;
       }
     }
   }
+
   let res = 0;
-  disk.forEach((value, idx) => {
+  resArray.forEach((value, idx) => {
     if (value !== -1) {
       res += value * idx;
     }
