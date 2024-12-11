@@ -16,7 +16,7 @@ const solve = (input, part2 = false) => {
   const nums = input.split("").map((x) => parseInt(x));
   let files = [];
   let space = [];
-  const resArray = [];
+  let resArray = [];
   let pos = 0;
   nums.forEach((blockSize, idx) => {
     if (idx % 2 === 0) {
@@ -54,14 +54,10 @@ const solve = (input, part2 = false) => {
     }
   }
 
-  let res = 0;
-  resArray.forEach((value, idx) => {
-    if (value !== -1) {
-      res += value * idx;
-    }
-  });
-
-  return res;
+  return resArray.reduce(
+    (res, value, idx) => (value !== -1 ? res + value * idx : res),
+    0,
+  );
 };
 
 run({
