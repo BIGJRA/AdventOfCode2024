@@ -4,7 +4,6 @@ const parseInput = (rawInput) => rawInput;
 
 const solve = (input, part2 = false) => {
   const coordsToHash = (coords) => coords[0] + "," + coords[1];
-  const hashToCoords = (hash) => hash.split(",").map((x) => parseInt(x));
   const isOutOfBounds = (coords) =>
     coords[0] < 0 || coords[0] >= C || coords[1] < 0 || coords[1] >= R;
   const fourNeighbors = (coords) => {
@@ -21,12 +20,6 @@ const solve = (input, part2 = false) => {
     });
     return n;
   };
-  const mapAdd = (map, key, valueToAdd) => {
-    if (!map.has(key)) {
-      map.set(key, 0);
-    }
-    map.set(key, map.get(key) + valueToAdd);
-  };
   const R = input.split("\n").length;
   const C = input.split("\n")[0].length;
   const visitedPoints = new Set();
@@ -35,14 +28,12 @@ const solve = (input, part2 = false) => {
 
   for (let y = 0; y < R; y++) {
     for (let x = 0; x < C; x++) {
-      // Here we start crawling, looking for each region
+      // Here we start crawling, looking for each region. Skips if a point has already been found (thorough)
       if (visitedPoints.has(coordsToHash([x, y]))) {
         continue;
       }
-      // console.log(`Starting search at ${x}, ${y}`)
       const letter = plotLookup([x, y]);
       let area = 0;
-      // let peri = 0;
 
       const fences = new Map(); // Structures fences. Note that we don't connect U/D on diagonals, eg.
       fences.set("U", []);
@@ -57,9 +48,11 @@ const solve = (input, part2 = false) => {
         curr = adj.pop();
         area += 1;
         for (const [dir, neighbor] of fourNeighbors(curr)) {
+          // If a neighbor is the same letter then there is no fence, otherwise there always is
           if (isOutOfBounds(neighbor) || plotLookup(neighbor) != letter) {
             fences.get(dir).push(curr);
           } else {
+            // And, when there is no fence, that is when we push the neighborto DFS
             if (!visitedPoints.has(coordsToHash(neighbor))) {
               visitedPoints.add(coordsToHash(neighbor));
               adj.push(neighbor);
@@ -68,6 +61,7 @@ const solve = (input, part2 = false) => {
         }
       }
       if (!part2) {
+        // Part 1 only wants simple perimeter: count the fences per type
         score +=
           area *
           (fences.get("U").length +
@@ -75,10 +69,11 @@ const solve = (input, part2 = false) => {
             fences.get("R").length +
             fences.get("L").length);
       } else {
+        // Part 2 wants lengths per fence: simply sorting in each direction solves this for us nicely
         let lengths = 0;
         fences.forEach((fenceArr, dir) => {
           if (dir == "U" || dir == "D") {
-            fenceArr.sort((a, b) => 10000 * (a[1] - b[1]) + (a[0] - b[0]));
+            fenceArr.sort((a, b) => 10000 * (a[1] - b[1]) + (a[0] - b[0])); // primary sort on the Y coord
             let prev = [-1, -1];
             fenceArr.forEach((fencePoint) => {
               if (!(prev[0] + 1 == fencePoint[0] && prev[1] == fencePoint[1])) {
@@ -87,7 +82,7 @@ const solve = (input, part2 = false) => {
               prev = fencePoint;
             });
           } else {
-            fenceArr.sort((a, b) => 10000 * (a[0] - b[0]) + (a[1] - b[1]));
+            fenceArr.sort((a, b) => 10000 * (a[0] - b[0]) + (a[1] - b[1])); // primary sort on the X coord
             let prev = [-1, -1];
             fenceArr.forEach((fencePoint) => {
               if (!(prev[0] == fencePoint[0] && prev[1] + 1 == fencePoint[1])) {

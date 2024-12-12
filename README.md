@@ -148,9 +148,9 @@ Both parts: 23.926ms
 
 ```
 Day 12
-Time part 1: 237.841ms
-Time part 2: 230.426ms
-Both parts: 468.267ms
+Time part 1: 233.874ms
+Time part 2: 231.039ms
+Both parts: 464.913ms
 ```
 
 ```
@@ -246,7 +246,7 @@ Both parts: -
 
 ```
 Total stars: 24/50
-Total time: 2855.692ms
+Total time: 2852.339ms
 ```
 
 <!--/RESULTS-->
