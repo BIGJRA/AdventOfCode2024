@@ -162,9 +162,9 @@ Both parts: 11.222ms
 
 ```
 Day 14
-Time part 1: 5.583ms
+Time part 1: 5.728ms
 Time part 2: -
-Both parts: 5.583ms
+Both parts: 5.728ms
 ```
 
 ```
@@ -246,7 +246,7 @@ Both parts: -
 
 ```
 Total stars: 27/50
-Total time: 2869.144ms
+Total time: 2869.289ms
 ```
 
 <!--/RESULTS-->
